@@ -1,0 +1,10 @@
+[package]
+name = "rust"
+version = "0.1.0"
+authors = ["Radium Zheng <ztl8702@msn.com>"]
+
+[dependencies]
+libc = "0.2.0"
+
+[build-dependencies]
+bindgen = "0.42.2"

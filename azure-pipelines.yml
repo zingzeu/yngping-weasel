@@ -1,0 +1,34 @@
+# Reference: https://aka.ms/yaml
+# Things to note:
+#   - Powershell session profiles do not work because the scripts are run with -NoProfile
+
+trigger:
+- master
+
+pool:
+  vmImage: 'vs2017-win2016'
+
+steps:
+- script: git submodule update --init
+  displayName: 'git submodule'
+- pwsh: choco install msys2 -y --version 20160719.1.1 --params "/NoUpdate"; choco install bazel -y --version 0.23.2 --ignore-dependencies  
+  # reason for ignore-dependencies: python2 already installed on windows-2019 vmImage.
+  displayName: 'Install dependencies'
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      [Environment]::SetEnvironmentVariable("BAZEL_SH", "c:\tools\msys64\usr\bin\bash.exe", "Machine");
+      [Environment]::SetEnvironmentVariable("BAZEL_PYTHON", "C:\Python27amd64\python.exe", "Machine");
+    pwsh: true
+  displayName: 'Set ENV vars'
+- pwsh: './build.ps1 server'
+  displayName: 'Build Weasel Server'
+- pwsh: './build.ps1 tsf-win32; ./build.ps1 tsf-win64;'
+  displayName: 'Build TSF DLLs'
+- pwsh: './build.ps1 predeploy; ./build.ps1 packserver; ./build.ps1 zip;'
+  displayName: 'Bundle'
+#- task: PublishPipelineArtifact@0
+#  inputs:
+#    artifactName: 'installerMsi'
+#    targetPath: 'msi/bin/Release/'
