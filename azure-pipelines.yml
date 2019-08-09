@@ -28,7 +28,7 @@ steps:
   displayName: 'Build TSF DLLs'
 - pwsh: './build.ps1 predeploy; ./build.ps1 packserver; ./build.ps1 zip;'
   displayName: 'Bundle'
-#- task: PublishPipelineArtifact@0
-#  inputs:
-#    artifactName: 'installerMsi'
-#    targetPath: 'msi/bin/Release/'
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'bundle'
+    targetPath: 'test.zip'

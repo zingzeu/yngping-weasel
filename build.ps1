@@ -49,17 +49,6 @@ if ($task -like "server") {
     cp -Force -Recurse "./bazel-out/x86_32_windows-fastbuild/bin/server/app.exe" -Destination "./bundle/"
 } elseif ($task -like "zip") {
     Compress-Archive -Force -Path ./bundle/* -CompressionLevel Optimal -DestinationPath ./test.zip
-} elseif ($task -like "installer") {
-    remove-item -Force -Recurse "./installer-build" -ErrorAction Ignore
-    mkdir "./installer-build"
-    iex 'dotnet restore ./deploy/TSF-TypeLib/TSF.TypeLib/TSF.TypeLib.csproj'
-    & $msbuild @("/p:Configuration=Release", "deploy\YngPing.Installer\YngPing.Installer.csproj")
-    cp -Force -Recurse "deploy\YngPing.Installer\bin\Release\*" "./installer-build/"
-} elseif ($task -like "msi") {
-    remove-item -Force -Recurse "./msi/bin" -ErrorAction Ignore
-    remove-item -Force -Recurse "./msi/obj" -ErrorAction Ignore
-    & $msbuild @("/p:Configuration=Release", "msi\default.wixproj")
-    exit $LASTEXITCODE
 } else {
     Write-Host "Unknown command: $($task)"
     exit -1
